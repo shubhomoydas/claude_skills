@@ -1,0 +1,39 @@
+# Whole-word replacements applied to the speech text before Kokoro reads it.
+# One pair per line: <text as written><TAB><text to say>. Lines starting with # are comments.
+# The voice spells unknown all-caps acronyms (MTEB, GPU) by itself; list only what it gets wrong.
+# Add terms the voice gets wrong here, or pass your own file with --lexicon (it is applied after this one).
+e.g.	for example
+i.e.	that is
+et al.	et al
+etc.	et cetera
+vs.	versus
+cf.	compare
+Fig.	Figure
+Figs.	Figures
+Eq.	Equation
+Eqs.	Equations
+Sec.	Section
+Secs.	Sections
+Ch.	Chapter
+Tab.	Table
+approx.	approximately
+w.r.t.	with respect to
+i.i.d.	I I D
+iid	I I D
+LoRA	Laura
+RoPE	rope
+SwiGLU	swi glue
+GELU	gelu
+ReLU	relu
+softmax	soft max
+arXiv	archive
+GitHub	git hub
+PyTorch	pie torch
+NumPy	num pie
+SciPy	sigh pie
+LaTeX	lay tech
+RAG	rag
+NISQ	nisk
+qubit	cue bit
+qubits	cue bits
+qudit	cue dit

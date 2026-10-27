@@ -1,0 +1,3329 @@
+{
+ "schema_version": "1.2",
+ "meta": {
+  "title": "HDBSCAN steps 2 to 6 on seven points",
+  "version": "1.0.0",
+  "date": "2026-10-25",
+  "width": 1920,
+  "height": 1080,
+  "fps": 30,
+  "default_seconds": 6,
+  "crossfade_seconds": 0.5,
+  "output_name": "hdbscan-steps-2-to-6",
+  "notes": "Points and numbers are the worked examples of the HDBSCAN summary; every value is recomputed by hdbscan_check.py. Edge weights are shown to three decimals.",
+  "layout": {
+   "note_font_size": 20
+  },
+  "audio": {
+   "voice": "af_heart",
+   "speed": 1.0,
+   "pause_seconds": 0.6
+  }
+ },
+ "style": {
+  "colors": {
+   "background": "#F4F6FA"
+  },
+  "entity_colors": {
+   "points": "#3B5B92",
+   "edges": "#5B6678",
+   "clusters": "#0E7C66"
+  },
+  "color_maps": {
+   "group": {
+    "base": "#3B5B92",
+    "cl_a": "#1F8A4C",
+    "cl_b": "#C2410C",
+    "noise": "#9AA3B2"
+   },
+   "edge_state": {
+    "faint": "#B7C0CF",
+    "shown": "#1F6FB2",
+    "kept": "#1F6FB2",
+    "mst": "#1F8A4C",
+    "self": "#6941C6"
+   },
+   "cluster_status": {
+    "active": "#1F8A4C",
+    "split": "#C2410C",
+    "shrunk": "#1F6FB2",
+    "gone": "#9AA3B2"
+   }
+  },
+  "badges": {
+   "info": {
+    "fill": "#E3E8F0",
+    "text": "#1F2A3D",
+    "label": "OVERVIEW",
+    "sources_optional": true
+   },
+   "available": {
+    "fill": "#1F8A4C",
+    "text": "#FFFFFF",
+    "label": "AVAILABLE (COMPUTED)"
+   },
+   "designed": {
+    "fill": "#C77700",
+    "text": "#FFFFFF",
+    "label": "DESIGNED, NOT BUILT",
+    "unbuilt": true
+   },
+   "planned": {
+    "fill": "#B42318",
+    "text": "#FFFFFF",
+    "label": "PLANNED",
+    "unbuilt": true
+   },
+   "inferred": {
+    "fill": "#6941C6",
+    "text": "#FFFFFF",
+    "label": "INFERRED, NOT RUN",
+    "unbuilt": true
+   }
+  },
+  "arrows": {
+   "flow": {
+    "color": "#1F6FB2",
+    "width": 4
+   },
+   "move": {
+    "color": "#C2410C",
+    "width": 4
+   }
+  },
+  "highlights": {
+   "focus": {
+    "color": "#1F6FB2",
+    "width": 4
+   },
+   "change": {
+    "color": "#C2410C",
+    "width": 4
+   }
+  },
+  "callouts": {
+   "info": {
+    "fill": "#EEF4FF",
+    "border": "#1F6FB2",
+    "text": "#1F2A3D"
+   },
+   "change": {
+    "fill": "#FFF7ED",
+    "border": "#C2410C",
+    "text": "#1F2A3D"
+   },
+   "rule": {
+    "fill": "#FFFBEB",
+    "border": "#C77700",
+    "text": "#1F2A3D"
+   }
+  }
+ },
+ "sources": [
+  {
+   "id": "S2",
+   "title": "HDBSCAN summary, Step 2 (mutual reachability distance) and Worked example 1",
+   "locator": "Campello et al., HDBSCAN (summary notes)",
+   "read_on": "2026-10-25",
+   "kind": "document"
+  },
+  {
+   "id": "S3",
+   "title": "HDBSCAN summary, Step 3 (mutual reachability graph, Proposition 1)",
+   "locator": "Campello et al., HDBSCAN (summary notes)",
+   "read_on": "2026-10-25",
+   "kind": "document"
+  },
+  {
+   "id": "S4",
+   "title": "HDBSCAN summary, Step 4 (minimum spanning tree with self-edges, Algorithm 1)",
+   "locator": "Campello et al., HDBSCAN (summary notes)",
+   "read_on": "2026-10-25",
+   "kind": "document"
+  },
+  {
+   "id": "S5",
+   "title": "HDBSCAN summary, Step 5 (hierarchy by removing edges) and Worked example 2 (k = 2)",
+   "locator": "Campello et al., HDBSCAN (summary notes)",
+   "read_on": "2026-10-25",
+   "kind": "document"
+  },
+  {
+   "id": "S6",
+   "title": "HDBSCAN summary, Step 6 (minimum cluster size m, Algorithm 2)",
+   "locator": "Campello et al., HDBSCAN (summary notes)",
+   "read_on": "2026-10-25",
+   "kind": "document"
+  },
+  {
+   "id": "CHK",
+   "title": "hdbscan_check.py: recomputes core distances, mutual reachability, MST, edge removals and the m rule; every number in the video comes from it and equals the summary's",
+   "locator": "walkthrough/hdbscan_check.py (run it to print the comparison)",
+   "read_on": "2026-10-25",
+   "kind": "measurement"
+  }
+ ],
+ "entities": {
+  "points": {
+   "title": "Points",
+   "key": "id",
+   "sources": [
+    "S2",
+    "CHK"
+   ],
+   "fields": {
+    "id": {
+     "nullable": false
+    },
+    "x": {
+     "nullable": false
+    },
+    "y": {
+     "nullable": false
+    },
+    "r": {
+     "nullable": true
+    },
+    "group": {
+     "enum": [
+      "base",
+      "cl_a",
+      "cl_b",
+      "noise"
+     ],
+     "nullable": false
+    }
+   }
+  },
+  "edges": {
+   "title": "Edges",
+   "key": "id",
+   "sources": [
+    "S3",
+    "CHK"
+   ],
+   "fields": {
+    "id": {
+     "nullable": false
+    },
+    "a": {
+     "ref": "points",
+     "nullable": false
+    },
+    "b": {
+     "ref": "points",
+     "nullable": false
+    },
+    "d": {
+     "nullable": true
+    },
+    "weight": {
+     "nullable": false
+    },
+    "state": {
+     "enum": [
+      "faint",
+      "shown",
+      "kept",
+      "mst",
+      "self"
+     ],
+     "nullable": false
+    }
+   }
+  },
+  "clusters": {
+   "title": "Clusters",
+   "key": "id",
+   "sources": [
+    "S5",
+    "S6",
+    "CHK"
+   ],
+   "fields": {
+    "id": {
+     "nullable": false
+    },
+    "members": {
+     "nullable": false
+    },
+    "size": {
+     "nullable": false
+    },
+    "status": {
+     "enum": [
+      "active",
+      "split",
+      "shrunk",
+      "gone"
+     ],
+     "nullable": false
+    }
+   }
+  }
+ },
+ "initial_state": {
+  "points": [
+   {
+    "id": "A",
+    "x": 0,
+    "y": 0,
+    "r": null,
+    "group": "base"
+   },
+   {
+    "id": "B",
+    "x": 1,
+    "y": 0,
+    "r": null,
+    "group": "base"
+   },
+   {
+    "id": "C",
+    "x": 0,
+    "y": 1,
+    "r": null,
+    "group": "base"
+   },
+   {
+    "id": "D",
+    "x": 1,
+    "y": 1,
+    "r": null,
+    "group": "base"
+   },
+   {
+    "id": "E",
+    "x": 6,
+    "y": 6,
+    "r": null,
+    "group": "base"
+   },
+   {
+    "id": "F",
+    "x": 7,
+    "y": 6,
+    "r": null,
+    "group": "base"
+   },
+   {
+    "id": "G",
+    "x": 3,
+    "y": 4,
+    "r": null,
+    "group": "base"
+   }
+  ],
+  "edges": [],
+  "clusters": []
+ },
+ "layout": {
+  "panels": [
+   {
+    "id": "g",
+    "kind": "graph",
+    "entity": "points",
+    "region": [
+     24,
+     96,
+     1000,
+     904
+    ],
+    "title": "The seven points (x, y)",
+    "subtitle": "to scale",
+    "edges_entity": "edges",
+    "x_field": "x",
+    "y_field": "y",
+    "radius_field": "r",
+    "point_color_field": "group",
+    "color_map": "group",
+    "show_coords": true,
+    "domain": {
+     "x": [
+      0,
+      7
+     ],
+     "y": [
+      0,
+      6
+     ]
+    },
+    "edge_weight": "weight",
+    "edge_state": "state",
+    "edge_styles": {
+     "faint": {
+      "color": "#B7C0CF",
+      "width": 1.5
+     },
+     "shown": {
+      "color": "#1F6FB2",
+      "width": 4,
+      "label": true
+     },
+     "kept": {
+      "color": "#1F6FB2",
+      "width": 4,
+      "label": true
+     },
+     "mst": {
+      "color": "#1F8A4C",
+      "width": 5,
+      "label": true
+     },
+     "self": {
+      "color": "#6941C6",
+      "width": 3,
+      "label": true
+     }
+    }
+   },
+   {
+    "id": "e",
+    "kind": "table",
+    "entity": "edges",
+    "region": [
+     1040,
+     96,
+     856,
+     640
+    ],
+    "title": "Edges",
+    "row_height": 26,
+    "font_size": 14,
+    "columns": [
+     {
+      "field": "id",
+      "width": 110,
+      "font": "mono"
+     },
+     {
+      "field": "d",
+      "width": 120,
+      "header": "plain d"
+     },
+     {
+      "field": "weight",
+      "width": 190,
+      "header": "mutual reachability"
+     },
+     {
+      "field": "state",
+      "width": 170,
+      "color_map": "edge_state"
+     }
+    ]
+   },
+   {
+    "id": "c",
+    "kind": "table",
+    "entity": "clusters",
+    "region": [
+     1040,
+     748,
+     856,
+     252
+    ],
+    "title": "Clusters of the hierarchy",
+    "columns": [
+     {
+      "field": "id",
+      "width": 70,
+      "font": "mono"
+     },
+     {
+      "field": "members",
+      "width": 270,
+      "font": "mono"
+     },
+     {
+      "field": "size",
+      "width": 90
+     },
+     {
+      "field": "status",
+      "width": 150,
+      "color_map": "cluster_status"
+     }
+    ]
+   }
+  ]
+ },
+ "frames": [
+  {
+   "id": "2a-points",
+   "step": "2.0",
+   "title": "The seven points of the worked example, k = 3",
+   "caption": "Worked example 1: a tight square, a loose pair and a loner (Euclidean distance).",
+   "status": {
+    "level": "info",
+    "detail": "Coordinates as in the summary, Worked example 1"
+   },
+   "sources": [
+    "S2"
+   ],
+   "transitions": [],
+   "annotations": [
+    {
+     "type": "note",
+     "target": "row:g:A",
+     "text": "A, B, C and D form a tight square, one unit apart.",
+     "style": "info",
+     "title": "The square"
+    },
+    {
+     "type": "note",
+     "target": "row:g:G",
+     "text": "G is a loner between the square and the pair E, F.",
+     "style": "info",
+     "title": "The loner"
+    }
+   ],
+   "narration": "Here are the seven points we will follow through steps two to six. A, B, C and D form a tight square. E and F are a loose pair in the far corner, and G is a loner in between. We use the number of neighbours k equal to three, and each point counts itself as the first neighbour.",
+   "panels": [
+    "g"
+   ]
+  },
+  {
+   "id": "2b-core",
+   "step": "2.1",
+   "title": "Core distance: the radius that holds k = 3 points",
+   "caption": "Each circle is just big enough to hold three points, the point itself included.",
+   "status": {
+    "level": "available",
+    "detail": "Computed by check script, equals the summary (core distance of A, D, E, F, G)"
+   },
+   "sources": [
+    "S2",
+    "CHK"
+   ],
+   "transitions": [
+    {
+     "op": "update_row",
+     "entity": "points",
+     "id": "A",
+     "set": {
+      "r": 1.0
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "points",
+     "id": "B",
+     "set": {
+      "r": 1.0
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "points",
+     "id": "C",
+     "set": {
+      "r": 1.0
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "points",
+     "id": "D",
+     "set": {
+      "r": 1.0
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "points",
+     "id": "E",
+     "set": {
+      "r": 3.606
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "points",
+     "id": "F",
+     "set": {
+      "r": 4.472
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "points",
+     "id": "G",
+     "set": {
+      "r": 3.606
+     }
+    }
+   ],
+   "annotations": [
+    {
+     "type": "note",
+     "target": "circle:g:F",
+     "text": "F needs radius 4.472 to find three points. E and G need 3.606.",
+     "style": "change",
+     "title": "Sparse points"
+    },
+    {
+     "type": "note",
+     "target": "circle:g:A",
+     "text": "A, B, C and D each need only 1.000.",
+     "style": "info",
+     "title": "Dense points"
+    }
+   ],
+   "narration": "First, the core distance. Each point draws a circle just big enough to hold three points, counting itself. In the dense square the radius is just one. For E and for G it is three point six oh six, and for F it is four point four seven two. Sparse places get big circles.",
+   "panels": [
+    "g"
+   ]
+  },
+  {
+   "id": "2c-dense",
+   "step": "2.2",
+   "title": "Mutual reachability: the largest of three numbers",
+   "caption": "d_mreach(a, b) = max(core a, core b, d(a, b)); dense pairs keep their distance.",
+   "status": {
+    "level": "available",
+    "detail": "Computed by check script, equals the summary (A-B 1.000, A-D 1.414)"
+   },
+   "sources": [
+    "S2",
+    "CHK"
+   ],
+   "transitions": [
+    {
+     "op": "add_row",
+     "entity": "edges",
+     "row": {
+      "id": "A-B",
+      "a": "A",
+      "b": "B",
+      "d": 1.0,
+      "weight": 1.0,
+      "state": "shown"
+     }
+    },
+    {
+     "op": "add_row",
+     "entity": "edges",
+     "row": {
+      "id": "A-D",
+      "a": "A",
+      "b": "D",
+      "d": 1.414,
+      "weight": 1.414,
+      "state": "shown"
+     }
+    }
+   ],
+   "annotations": [
+    {
+     "type": "note",
+     "target": "edge:g:A-B",
+     "text": "max(1.000, 1.000, 1.000) = 1.000. Unchanged.",
+     "style": "info",
+     "title": "A to B"
+    },
+    {
+     "type": "note",
+     "target": "edge:g:A-D",
+     "text": "max(1.000, 1.000, 1.414) = 1.414. Unchanged.",
+     "style": "info",
+     "title": "A to D"
+    }
+   ],
+   "narration": "The mutual reachability distance between two points is the largest of three numbers: the core distance of each point, and their ordinary distance. For A and B all three are one, so the answer is one. For A and D the ordinary distance, one point four one four, is the largest, so it stays. Dense pairs keep their distance.",
+   "panels": [
+    "g",
+    "e"
+   ]
+  },
+  {
+   "id": "2d-plain",
+   "step": "2.3",
+   "title": "E and F are as close as A and B in the plain metric",
+   "caption": "The plain distance between E and F is 1.000.",
+   "status": {
+    "level": "available",
+    "detail": "Computed by check script, equals the summary (d(E, F) = 1.000)"
+   },
+   "sources": [
+    "S2",
+    "CHK"
+   ],
+   "transitions": [
+    {
+     "op": "add_row",
+     "entity": "edges",
+     "row": {
+      "id": "E-F",
+      "a": "E",
+      "b": "F",
+      "d": 1.0,
+      "weight": 1.0,
+      "state": "shown"
+     }
+    }
+   ],
+   "annotations": [
+    {
+     "type": "note",
+     "target": "edge:g:E-F",
+     "text": "Plain distance 1.000: as tight as A and B. The next frame applies the new distance.",
+     "style": "info",
+     "title": "E to F"
+    }
+   ],
+   "narration": "Now look at E and F. In the plain metric they are exactly one apart, as tight as A and B.",
+   "panels": [
+    "g",
+    "e"
+   ]
+  },
+  {
+   "id": "2e-pushed",
+   "step": "2.4",
+   "title": "Mutual reachability pushes the sparse pair apart",
+   "caption": "E and F move from 1.000 to 4.472: the core distance of F sets the value.",
+   "status": {
+    "level": "available",
+    "detail": "Computed by check script, equals the summary (d_mreach(E, F) = 4.472)"
+   },
+   "sources": [
+    "S2",
+    "CHK"
+   ],
+   "transitions": [
+    {
+     "op": "update_row",
+     "entity": "edges",
+     "id": "E-F",
+     "set": {
+      "weight": 4.472
+     }
+    }
+   ],
+   "annotations": [
+    {
+     "type": "before_after",
+     "target": "cell:e:E-F:weight",
+     "style": "change",
+     "x": 1100,
+     "y": 280,
+     "w": 420,
+     "title": "E to F"
+    },
+    {
+     "type": "note",
+     "target": "edge:g:E-F",
+     "text": "max(3.606, 4.472, 1.000) = 4.472. A sparse pair is no longer tight.",
+     "style": "change",
+     "title": "Pushed apart",
+     "x": 1100,
+     "y": 470,
+     "w": 440
+    }
+   ],
+   "narration": "Under mutual reachability the story changes. The core distance of F is four point four seven two, which is the largest of the three numbers. So E and F are now four point four seven two apart, not one. The sparse pair is pushed apart.",
+   "panels": [
+    "g",
+    "e"
+   ]
+  },
+  {
+   "id": "2f-others",
+   "step": "2.5",
+   "title": "The loner and the far pairs",
+   "caption": "D-G takes the loner's own core distance; D-E is far enough that nothing changes.",
+   "status": {
+    "level": "available",
+    "detail": "Computed by check script, equals the summary (D-G 3.606, D-E 7.071)"
+   },
+   "sources": [
+    "S2",
+    "CHK"
+   ],
+   "transitions": [
+    {
+     "op": "add_row",
+     "entity": "edges",
+     "row": {
+      "id": "D-G",
+      "a": "D",
+      "b": "G",
+      "d": 3.606,
+      "weight": 3.606,
+      "state": "shown"
+     }
+    },
+    {
+     "op": "add_row",
+     "entity": "edges",
+     "row": {
+      "id": "D-E",
+      "a": "D",
+      "b": "E",
+      "d": 7.071,
+      "weight": 7.071,
+      "state": "shown"
+     }
+    }
+   ],
+   "annotations": [
+    {
+     "type": "note",
+     "target": "edge:g:D-G",
+     "text": "The loner's core distance, 3.606, sets the value: G joins the square at 3.606.",
+     "style": "info",
+     "title": "D to G"
+    },
+    {
+     "type": "note",
+     "target": "edge:g:D-E",
+     "text": "Far apart: d = 7.071 is the largest number, so no change.",
+     "style": "info",
+     "title": "D to E"
+    }
+   ],
+   "narration": "For the loner G, its own core distance of three point six oh six sets the distance to D. And D to E are so far apart that the ordinary distance, seven point oh seven one, is the largest anyway. So the new distance only changes things in sparse places.",
+   "panels": [
+    "g",
+    "e"
+   ]
+  },
+  {
+   "id": "3a-graph",
+   "step": "3.0",
+   "title": "Step 3: the mutual reachability graph",
+   "caption": "Every pair of points is an edge; 21 edges, each with its mutual reachability distance.",
+   "status": {
+    "level": "available",
+    "detail": "Computed by check script, equals the summary (21 pairs of 7 points)"
+   },
+   "sources": [
+    "S3",
+    "CHK"
+   ],
+   "transitions": [
+    {
+     "op": "update_row",
+     "entity": "points",
+     "id": "A",
+     "set": {
+      "r": null
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "points",
+     "id": "B",
+     "set": {
+      "r": null
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "points",
+     "id": "C",
+     "set": {
+      "r": null
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "points",
+     "id": "D",
+     "set": {
+      "r": null
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "points",
+     "id": "E",
+     "set": {
+      "r": null
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "points",
+     "id": "F",
+     "set": {
+      "r": null
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "points",
+     "id": "G",
+     "set": {
+      "r": null
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "edges",
+     "id": "A-B",
+     "set": {
+      "state": "faint"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "edges",
+     "id": "A-D",
+     "set": {
+      "state": "faint"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "edges",
+     "id": "E-F",
+     "set": {
+      "state": "faint"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "edges",
+     "id": "D-G",
+     "set": {
+      "state": "faint"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "edges",
+     "id": "D-E",
+     "set": {
+      "state": "faint"
+     }
+    },
+    {
+     "op": "add_row",
+     "entity": "edges",
+     "row": {
+      "id": "A-C",
+      "a": "A",
+      "b": "C",
+      "d": 1.0,
+      "weight": 1.0,
+      "state": "faint"
+     }
+    },
+    {
+     "op": "add_row",
+     "entity": "edges",
+     "row": {
+      "id": "A-E",
+      "a": "A",
+      "b": "E",
+      "d": 8.485,
+      "weight": 8.485,
+      "state": "faint"
+     }
+    },
+    {
+     "op": "add_row",
+     "entity": "edges",
+     "row": {
+      "id": "A-F",
+      "a": "A",
+      "b": "F",
+      "d": 9.22,
+      "weight": 9.22,
+      "state": "faint"
+     }
+    },
+    {
+     "op": "add_row",
+     "entity": "edges",
+     "row": {
+      "id": "A-G",
+      "a": "A",
+      "b": "G",
+      "d": 5.0,
+      "weight": 5.0,
+      "state": "faint"
+     }
+    },
+    {
+     "op": "add_row",
+     "entity": "edges",
+     "row": {
+      "id": "B-C",
+      "a": "B",
+      "b": "C",
+      "d": 1.414,
+      "weight": 1.414,
+      "state": "faint"
+     }
+    },
+    {
+     "op": "add_row",
+     "entity": "edges",
+     "row": {
+      "id": "B-D",
+      "a": "B",
+      "b": "D",
+      "d": 1.0,
+      "weight": 1.0,
+      "state": "faint"
+     }
+    },
+    {
+     "op": "add_row",
+     "entity": "edges",
+     "row": {
+      "id": "B-E",
+      "a": "B",
+      "b": "E",
+      "d": 7.81,
+      "weight": 7.81,
+      "state": "faint"
+     }
+    },
+    {
+     "op": "add_row",
+     "entity": "edges",
+     "row": {
+      "id": "B-F",
+      "a": "B",
+      "b": "F",
+      "d": 8.485,
+      "weight": 8.485,
+      "state": "faint"
+     }
+    },
+    {
+     "op": "add_row",
+     "entity": "edges",
+     "row": {
+      "id": "B-G",
+      "a": "B",
+      "b": "G",
+      "d": 4.472,
+      "weight": 4.472,
+      "state": "faint"
+     }
+    },
+    {
+     "op": "add_row",
+     "entity": "edges",
+     "row": {
+      "id": "C-D",
+      "a": "C",
+      "b": "D",
+      "d": 1.0,
+      "weight": 1.0,
+      "state": "faint"
+     }
+    },
+    {
+     "op": "add_row",
+     "entity": "edges",
+     "row": {
+      "id": "C-E",
+      "a": "C",
+      "b": "E",
+      "d": 7.81,
+      "weight": 7.81,
+      "state": "faint"
+     }
+    },
+    {
+     "op": "add_row",
+     "entity": "edges",
+     "row": {
+      "id": "C-F",
+      "a": "C",
+      "b": "F",
+      "d": 8.602,
+      "weight": 8.602,
+      "state": "faint"
+     }
+    },
+    {
+     "op": "add_row",
+     "entity": "edges",
+     "row": {
+      "id": "C-G",
+      "a": "C",
+      "b": "G",
+      "d": 4.243,
+      "weight": 4.243,
+      "state": "faint"
+     }
+    },
+    {
+     "op": "add_row",
+     "entity": "edges",
+     "row": {
+      "id": "D-F",
+      "a": "D",
+      "b": "F",
+      "d": 7.81,
+      "weight": 7.81,
+      "state": "faint"
+     }
+    },
+    {
+     "op": "add_row",
+     "entity": "edges",
+     "row": {
+      "id": "E-G",
+      "a": "E",
+      "b": "G",
+      "d": 3.606,
+      "weight": 3.606,
+      "state": "faint"
+     }
+    },
+    {
+     "op": "add_row",
+     "entity": "edges",
+     "row": {
+      "id": "F-G",
+      "a": "F",
+      "b": "G",
+      "d": 4.472,
+      "weight": 4.472,
+      "state": "faint"
+     }
+    }
+   ],
+   "annotations": [
+    {
+     "type": "note",
+     "target": "edge:g:D-E",
+     "text": "The complete graph on seven points has 21 edges. The table lists each weight.",
+     "style": "info",
+     "title": "Complete graph"
+    }
+   ],
+   "narration": "Step three treats the points as a complete graph. Every pair of points is an edge, and each edge carries its mutual reachability distance. Seven points give twenty one edges. The table lists every weight.",
+   "panels": [
+    "g",
+    "e"
+   ]
+  },
+  {
+   "id": "3b-eps3",
+   "step": "3.1",
+   "title": "Proposition 1: keep the edges of weight at most 3.0",
+   "caption": "Cut at epsilon = 3.0: the square is one cluster; E, F and G are noise.",
+   "status": {
+    "level": "available",
+    "detail": "Computed by check script, equals the summary (Step 3 table, row epsilon 3.0)"
+   },
+   "sources": [
+    "S3",
+    "CHK"
+   ],
+   "transitions": [
+    {
+     "op": "update_row",
+     "entity": "edges",
+     "id": "A-B",
+     "set": {
+      "state": "kept"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "edges",
+     "id": "A-C",
+     "set": {
+      "state": "kept"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "edges",
+     "id": "A-D",
+     "set": {
+      "state": "kept"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "edges",
+     "id": "A-E",
+     "set": {
+      "state": "faint"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "edges",
+     "id": "A-F",
+     "set": {
+      "state": "faint"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "edges",
+     "id": "A-G",
+     "set": {
+      "state": "faint"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "edges",
+     "id": "B-C",
+     "set": {
+      "state": "kept"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "edges",
+     "id": "B-D",
+     "set": {
+      "state": "kept"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "edges",
+     "id": "B-E",
+     "set": {
+      "state": "faint"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "edges",
+     "id": "B-F",
+     "set": {
+      "state": "faint"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "edges",
+     "id": "B-G",
+     "set": {
+      "state": "faint"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "edges",
+     "id": "C-D",
+     "set": {
+      "state": "kept"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "edges",
+     "id": "C-E",
+     "set": {
+      "state": "faint"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "edges",
+     "id": "C-F",
+     "set": {
+      "state": "faint"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "edges",
+     "id": "C-G",
+     "set": {
+      "state": "faint"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "edges",
+     "id": "D-E",
+     "set": {
+      "state": "faint"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "edges",
+     "id": "D-F",
+     "set": {
+      "state": "faint"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "edges",
+     "id": "D-G",
+     "set": {
+      "state": "faint"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "edges",
+     "id": "E-F",
+     "set": {
+      "state": "faint"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "edges",
+     "id": "E-G",
+     "set": {
+      "state": "faint"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "edges",
+     "id": "F-G",
+     "set": {
+      "state": "faint"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "points",
+     "id": "A",
+     "set": {
+      "group": "cl_a"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "points",
+     "id": "B",
+     "set": {
+      "group": "cl_a"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "points",
+     "id": "C",
+     "set": {
+      "group": "cl_a"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "points",
+     "id": "D",
+     "set": {
+      "group": "cl_a"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "points",
+     "id": "E",
+     "set": {
+      "group": "noise"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "points",
+     "id": "F",
+     "set": {
+      "group": "noise"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "points",
+     "id": "G",
+     "set": {
+      "group": "noise"
+     }
+    }
+   ],
+   "annotations": [
+    {
+     "type": "note",
+     "target": "row:g:D",
+     "text": "Only the square's edges are at most 3.0. A, B, C, D are cores and one cluster.",
+     "style": "info",
+     "title": "epsilon = 3.0"
+    },
+    {
+     "type": "note",
+     "target": "row:g:G",
+     "text": "E, F, G have core distance above 3.0: noise.",
+     "style": "change",
+     "title": "Noise"
+    }
+   ],
+   "narration": "Proposition one says that cutting this graph at a level epsilon gives the DBSCAN star clusters. Keep only the edges no heavier than three. The square stays connected as one cluster. E, F and G have core distances above three, so they are noise.",
+   "panels": [
+    "g",
+    "e"
+   ]
+  },
+  {
+   "id": "3c-eps3606",
+   "step": "3.2",
+   "title": "Raise epsilon to 3.606: G and E join, F stays out",
+   "caption": "At 3.606 the edges D-G and E-G appear; F is noise because its core distance is 4.472.",
+   "status": {
+    "level": "available",
+    "detail": "Computed by check script, equals the summary (Step 3 table, row epsilon 3.606)"
+   },
+   "sources": [
+    "S3",
+    "CHK"
+   ],
+   "transitions": [
+    {
+     "op": "update_row",
+     "entity": "edges",
+     "id": "A-B",
+     "set": {
+      "state": "kept"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "edges",
+     "id": "A-C",
+     "set": {
+      "state": "kept"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "edges",
+     "id": "A-D",
+     "set": {
+      "state": "kept"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "edges",
+     "id": "A-E",
+     "set": {
+      "state": "faint"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "edges",
+     "id": "A-F",
+     "set": {
+      "state": "faint"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "edges",
+     "id": "A-G",
+     "set": {
+      "state": "faint"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "edges",
+     "id": "B-C",
+     "set": {
+      "state": "kept"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "edges",
+     "id": "B-D",
+     "set": {
+      "state": "kept"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "edges",
+     "id": "B-E",
+     "set": {
+      "state": "faint"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "edges",
+     "id": "B-F",
+     "set": {
+      "state": "faint"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "edges",
+     "id": "B-G",
+     "set": {
+      "state": "faint"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "edges",
+     "id": "C-D",
+     "set": {
+      "state": "kept"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "edges",
+     "id": "C-E",
+     "set": {
+      "state": "faint"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "edges",
+     "id": "C-F",
+     "set": {
+      "state": "faint"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "edges",
+     "id": "C-G",
+     "set": {
+      "state": "faint"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "edges",
+     "id": "D-E",
+     "set": {
+      "state": "faint"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "edges",
+     "id": "D-F",
+     "set": {
+      "state": "faint"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "edges",
+     "id": "D-G",
+     "set": {
+      "state": "kept"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "edges",
+     "id": "E-F",
+     "set": {
+      "state": "faint"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "edges",
+     "id": "E-G",
+     "set": {
+      "state": "kept"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "edges",
+     "id": "F-G",
+     "set": {
+      "state": "faint"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "points",
+     "id": "A",
+     "set": {
+      "group": "cl_a"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "points",
+     "id": "B",
+     "set": {
+      "group": "cl_a"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "points",
+     "id": "C",
+     "set": {
+      "group": "cl_a"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "points",
+     "id": "D",
+     "set": {
+      "group": "cl_a"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "points",
+     "id": "E",
+     "set": {
+      "group": "cl_a"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "points",
+     "id": "F",
+     "set": {
+      "group": "noise"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "points",
+     "id": "G",
+     "set": {
+      "group": "cl_a"
+     }
+    }
+   ],
+   "annotations": [
+    {
+     "type": "note",
+     "target": "edge:g:D-G",
+     "text": "D-G and E-G weigh 3.606. A, B, C, D, G, E are one cluster.",
+     "style": "info",
+     "title": "epsilon = 3.606"
+    },
+    {
+     "type": "note",
+     "target": "row:g:F",
+     "text": "core(F) = 4.472 is above 3.606: F is noise. DBSCAN would keep F as a border point.",
+     "style": "change",
+     "title": "F is noise"
+    }
+   ],
+   "narration": "Raise the level to three point six oh six. The edges to G and from G to E now survive, so the square, G and E form one cluster. F is still noise, because its core distance of four point four seven two is above the level. Plain DBSCAN would keep F as a border point, but DBSCAN star does not.",
+   "panels": [
+    "g",
+    "e"
+   ]
+  },
+  {
+   "id": "3d-eps45",
+   "step": "3.3",
+   "title": "At epsilon = 4.5 every point is in one cluster",
+   "caption": "All edges of weight at most 4.5 are kept; all seven points are cores.",
+   "status": {
+    "level": "available",
+    "detail": "Computed by check script, equals the summary (Step 3 table, row epsilon 4.5)"
+   },
+   "sources": [
+    "S3",
+    "CHK"
+   ],
+   "transitions": [
+    {
+     "op": "update_row",
+     "entity": "edges",
+     "id": "A-B",
+     "set": {
+      "state": "kept"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "edges",
+     "id": "A-C",
+     "set": {
+      "state": "kept"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "edges",
+     "id": "A-D",
+     "set": {
+      "state": "kept"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "edges",
+     "id": "A-E",
+     "set": {
+      "state": "faint"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "edges",
+     "id": "A-F",
+     "set": {
+      "state": "faint"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "edges",
+     "id": "A-G",
+     "set": {
+      "state": "faint"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "edges",
+     "id": "B-C",
+     "set": {
+      "state": "kept"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "edges",
+     "id": "B-D",
+     "set": {
+      "state": "kept"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "edges",
+     "id": "B-E",
+     "set": {
+      "state": "faint"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "edges",
+     "id": "B-F",
+     "set": {
+      "state": "faint"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "edges",
+     "id": "B-G",
+     "set": {
+      "state": "kept"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "edges",
+     "id": "C-D",
+     "set": {
+      "state": "kept"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "edges",
+     "id": "C-E",
+     "set": {
+      "state": "faint"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "edges",
+     "id": "C-F",
+     "set": {
+      "state": "faint"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "edges",
+     "id": "C-G",
+     "set": {
+      "state": "kept"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "edges",
+     "id": "D-E",
+     "set": {
+      "state": "faint"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "edges",
+     "id": "D-F",
+     "set": {
+      "state": "faint"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "edges",
+     "id": "D-G",
+     "set": {
+      "state": "kept"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "edges",
+     "id": "E-F",
+     "set": {
+      "state": "kept"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "edges",
+     "id": "E-G",
+     "set": {
+      "state": "kept"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "edges",
+     "id": "F-G",
+     "set": {
+      "state": "kept"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "points",
+     "id": "A",
+     "set": {
+      "group": "cl_a"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "points",
+     "id": "B",
+     "set": {
+      "group": "cl_a"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "points",
+     "id": "C",
+     "set": {
+      "group": "cl_a"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "points",
+     "id": "D",
+     "set": {
+      "group": "cl_a"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "points",
+     "id": "E",
+     "set": {
+      "group": "cl_a"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "points",
+     "id": "F",
+     "set": {
+      "group": "cl_a"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "points",
+     "id": "G",
+     "set": {
+      "group": "cl_a"
+     }
+    }
+   ],
+   "annotations": [
+    {
+     "type": "note",
+     "target": "edge:g:E-F",
+     "text": "E-F (4.472) joins F. One cluster of all seven.",
+     "style": "info",
+     "title": "epsilon = 4.5"
+    }
+   ],
+   "narration": "At four point five, the edge from E to F also survives, so F joins and all seven points are one cluster. Lower the level and edges drop from the heaviest, so clusters only split or shrink. That nesting is the hierarchy.",
+   "panels": [
+    "g",
+    "e"
+   ]
+  },
+  {
+   "id": "4a-mst",
+   "step": "4.0",
+   "title": "Step 4: the minimum spanning tree keeps 6 of the 21 edges",
+   "caption": "The tree connects all seven points with the smallest total weight.",
+   "status": {
+    "level": "available",
+    "detail": "Computed; tied edges chosen as in the summary"
+   },
+   "sources": [
+    "S4",
+    "CHK"
+   ],
+   "transitions": [
+    {
+     "op": "update_row",
+     "entity": "points",
+     "id": "A",
+     "set": {
+      "group": "base"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "points",
+     "id": "B",
+     "set": {
+      "group": "base"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "points",
+     "id": "C",
+     "set": {
+      "group": "base"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "points",
+     "id": "D",
+     "set": {
+      "group": "base"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "points",
+     "id": "E",
+     "set": {
+      "group": "base"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "points",
+     "id": "F",
+     "set": {
+      "group": "base"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "points",
+     "id": "G",
+     "set": {
+      "group": "base"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "edges",
+     "id": "A-D",
+     "set": {
+      "state": "faint"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "edges",
+     "id": "A-E",
+     "set": {
+      "state": "faint"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "edges",
+     "id": "A-F",
+     "set": {
+      "state": "faint"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "edges",
+     "id": "A-G",
+     "set": {
+      "state": "faint"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "edges",
+     "id": "B-C",
+     "set": {
+      "state": "faint"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "edges",
+     "id": "B-E",
+     "set": {
+      "state": "faint"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "edges",
+     "id": "B-F",
+     "set": {
+      "state": "faint"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "edges",
+     "id": "B-G",
+     "set": {
+      "state": "faint"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "edges",
+     "id": "C-D",
+     "set": {
+      "state": "faint"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "edges",
+     "id": "C-E",
+     "set": {
+      "state": "faint"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "edges",
+     "id": "C-F",
+     "set": {
+      "state": "faint"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "edges",
+     "id": "C-G",
+     "set": {
+      "state": "faint"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "edges",
+     "id": "D-E",
+     "set": {
+      "state": "faint"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "edges",
+     "id": "D-F",
+     "set": {
+      "state": "faint"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "edges",
+     "id": "F-G",
+     "set": {
+      "state": "faint"
+     }
+    },
+    {
+     "op": "delete_row",
+     "entity": "edges",
+     "id": "A-D"
+    },
+    {
+     "op": "delete_row",
+     "entity": "edges",
+     "id": "A-E"
+    },
+    {
+     "op": "delete_row",
+     "entity": "edges",
+     "id": "A-F"
+    },
+    {
+     "op": "delete_row",
+     "entity": "edges",
+     "id": "A-G"
+    },
+    {
+     "op": "delete_row",
+     "entity": "edges",
+     "id": "B-C"
+    },
+    {
+     "op": "delete_row",
+     "entity": "edges",
+     "id": "B-E"
+    },
+    {
+     "op": "delete_row",
+     "entity": "edges",
+     "id": "B-F"
+    },
+    {
+     "op": "delete_row",
+     "entity": "edges",
+     "id": "B-G"
+    },
+    {
+     "op": "delete_row",
+     "entity": "edges",
+     "id": "C-D"
+    },
+    {
+     "op": "delete_row",
+     "entity": "edges",
+     "id": "C-E"
+    },
+    {
+     "op": "delete_row",
+     "entity": "edges",
+     "id": "C-F"
+    },
+    {
+     "op": "delete_row",
+     "entity": "edges",
+     "id": "C-G"
+    },
+    {
+     "op": "delete_row",
+     "entity": "edges",
+     "id": "D-E"
+    },
+    {
+     "op": "delete_row",
+     "entity": "edges",
+     "id": "D-F"
+    },
+    {
+     "op": "delete_row",
+     "entity": "edges",
+     "id": "F-G"
+    },
+    {
+     "op": "update_row",
+     "entity": "edges",
+     "id": "A-B",
+     "set": {
+      "state": "mst"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "edges",
+     "id": "A-C",
+     "set": {
+      "state": "mst"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "edges",
+     "id": "B-D",
+     "set": {
+      "state": "mst"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "edges",
+     "id": "D-G",
+     "set": {
+      "state": "mst"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "edges",
+     "id": "E-G",
+     "set": {
+      "state": "mst"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "edges",
+     "id": "E-F",
+     "set": {
+      "state": "mst"
+     }
+    }
+   ],
+   "annotations": [
+    {
+     "type": "note",
+     "target": "edge:g:E-F",
+     "text": "Six edges are enough: A-B, A-C, B-D at 1.000, D-G and E-G at 3.606, E-F at 4.472.",
+     "style": "info",
+     "title": "The tree"
+    }
+   ],
+   "narration": "Step four keeps only the edges that matter. A minimum spanning tree picks six of the twenty one edges: three of weight one in the square, two of weight three point six oh six that reach G and E, and the edge from E to F, four point four seven two. It connects every point with the smallest total weight.",
+   "panels": [
+    "g",
+    "e"
+   ]
+  },
+  {
+   "id": "4b-self",
+   "step": "4.1",
+   "title": "Add a self-edge per point, weighted by its core distance",
+   "caption": "The extended tree has 13 edges, 2n - 1; a self-edge marks when a point turns to noise.",
+   "status": {
+    "level": "available",
+    "detail": "Computed by check script, equals the summary (7 self-edges, 13 edges in all)"
+   },
+   "sources": [
+    "S4",
+    "CHK"
+   ],
+   "transitions": [
+    {
+     "op": "add_row",
+     "entity": "edges",
+     "row": {
+      "id": "A-A",
+      "a": "A",
+      "b": "A",
+      "d": null,
+      "weight": 1.0,
+      "state": "self"
+     }
+    },
+    {
+     "op": "add_row",
+     "entity": "edges",
+     "row": {
+      "id": "B-B",
+      "a": "B",
+      "b": "B",
+      "d": null,
+      "weight": 1.0,
+      "state": "self"
+     }
+    },
+    {
+     "op": "add_row",
+     "entity": "edges",
+     "row": {
+      "id": "C-C",
+      "a": "C",
+      "b": "C",
+      "d": null,
+      "weight": 1.0,
+      "state": "self"
+     }
+    },
+    {
+     "op": "add_row",
+     "entity": "edges",
+     "row": {
+      "id": "D-D",
+      "a": "D",
+      "b": "D",
+      "d": null,
+      "weight": 1.0,
+      "state": "self"
+     }
+    },
+    {
+     "op": "add_row",
+     "entity": "edges",
+     "row": {
+      "id": "E-E",
+      "a": "E",
+      "b": "E",
+      "d": null,
+      "weight": 3.606,
+      "state": "self"
+     }
+    },
+    {
+     "op": "add_row",
+     "entity": "edges",
+     "row": {
+      "id": "F-F",
+      "a": "F",
+      "b": "F",
+      "d": null,
+      "weight": 4.472,
+      "state": "self"
+     }
+    },
+    {
+     "op": "add_row",
+     "entity": "edges",
+     "row": {
+      "id": "G-G",
+      "a": "G",
+      "b": "G",
+      "d": null,
+      "weight": 3.606,
+      "state": "self"
+     }
+    }
+   ],
+   "annotations": [
+    {
+     "type": "note",
+     "target": "edge:g:F-F",
+     "text": "F's self-edge weighs 4.472: below that level F has no edge left, so F is noise.",
+     "style": "info",
+     "title": "Self-edge of F"
+    }
+   ],
+   "narration": "Then add one extra edge for each point, from the point to itself, weighted by its core distance. The little loops on the plot are these self-edges. The extended tree has thirteen edges, which is two n minus one. A self-edge goes last for its point, and its removal is the moment the point turns into noise.",
+   "panels": [
+    "g",
+    "e"
+   ]
+  },
+  {
+   "id": "5a-root",
+   "step": "5.0",
+   "title": "Step 5: start with one cluster, remove edges from the heaviest",
+   "caption": "Remove edges in decreasing weight; tied edges are removed together.",
+   "status": {
+    "level": "available",
+    "detail": "Computed by check script, equals the summary"
+   },
+   "sources": [
+    "S5",
+    "CHK"
+   ],
+   "transitions": [
+    {
+     "op": "add_row",
+     "entity": "clusters",
+     "row": {
+      "id": "C1",
+      "members": "A B C D E F G",
+      "size": 7,
+      "status": "active"
+     }
+    }
+   ],
+   "annotations": [
+    {
+     "type": "note",
+     "target": "row:c:C1",
+     "text": "The root holds all seven points. Each removal tells which pieces remain.",
+     "style": "info",
+     "title": "Root"
+    }
+   ],
+   "narration": "Now the hierarchy. Start with every point in one root cluster. Then remove edges from the heaviest to the lightest, and watch what falls apart. Edges with equal weight go together.",
+   "panels": [
+    "g",
+    "e",
+    "c"
+   ]
+  },
+  {
+   "id": "5b-4472",
+   "step": "5.1",
+   "title": "Level 4.472: remove E-F and the self-edge of F",
+   "caption": "F has no edge left, so F turns to noise; the other six stay in one piece.",
+   "status": {
+    "level": "available",
+    "detail": "Computed by check script, equals the summary (Step 5 table, row 4.472)"
+   },
+   "sources": [
+    "S5",
+    "CHK"
+   ],
+   "transitions": [
+    {
+     "op": "delete_row",
+     "entity": "edges",
+     "id": "E-F"
+    },
+    {
+     "op": "delete_row",
+     "entity": "edges",
+     "id": "F-F"
+    },
+    {
+     "op": "update_row",
+     "entity": "points",
+     "id": "F",
+     "set": {
+      "group": "noise"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "clusters",
+     "id": "C1",
+     "set": {
+      "members": "A B C D E G",
+      "size": 6
+     }
+    }
+   ],
+   "annotations": [
+    {
+     "type": "note",
+     "target": "row:g:F",
+     "text": "No edge left at F: F is noise.",
+     "style": "change",
+     "title": "F drops out"
+    }
+   ],
+   "narration": "At level four point four seven two the edge from E to F and the self-edge of F are removed. F has no edge left, so F turns into noise. The other six points stay in one piece, so the cluster only shrinks.",
+   "panels": [
+    "g",
+    "e",
+    "c"
+   ]
+  },
+  {
+   "id": "5c-3606",
+   "step": "5.2",
+   "title": "Level 3.606: remove D-G, E-G and the self-edges of G and E",
+   "caption": "G and E have no edge left and become noise; the square stays.",
+   "status": {
+    "level": "available",
+    "detail": "Computed by check script, equals the summary (Step 5 table, row 3.606)"
+   },
+   "sources": [
+    "S5",
+    "CHK"
+   ],
+   "transitions": [
+    {
+     "op": "delete_row",
+     "entity": "edges",
+     "id": "D-G"
+    },
+    {
+     "op": "delete_row",
+     "entity": "edges",
+     "id": "E-G"
+    },
+    {
+     "op": "delete_row",
+     "entity": "edges",
+     "id": "E-E"
+    },
+    {
+     "op": "delete_row",
+     "entity": "edges",
+     "id": "G-G"
+    },
+    {
+     "op": "update_row",
+     "entity": "points",
+     "id": "E",
+     "set": {
+      "group": "noise"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "points",
+     "id": "G",
+     "set": {
+      "group": "noise"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "clusters",
+     "id": "C1",
+     "set": {
+      "members": "A B C D",
+      "size": 4
+     }
+    }
+   ],
+   "annotations": [
+    {
+     "type": "note",
+     "target": "row:g:G",
+     "text": "G and E lose every edge: noise. The square is still connected.",
+     "style": "change",
+     "title": "G and E drop out"
+    }
+   ],
+   "narration": "At three point six oh six, four edges go: the two tree edges that reach G and E, and their self-edges. G and E have no edge left, so both turn into noise. The square stays together.",
+   "panels": [
+    "g",
+    "e",
+    "c"
+   ]
+  },
+  {
+   "id": "5d-1",
+   "step": "5.3",
+   "title": "Level 1.000: the square's edges go and the cluster is gone",
+   "caption": "At k = 3 the hierarchy never splits: one cluster that only shrinks, then disappears.",
+   "status": {
+    "level": "available",
+    "detail": "Computed by check script, equals the summary (Step 5 table, row 1.000)"
+   },
+   "sources": [
+    "S5",
+    "CHK"
+   ],
+   "transitions": [
+    {
+     "op": "delete_row",
+     "entity": "edges",
+     "id": "A-B"
+    },
+    {
+     "op": "delete_row",
+     "entity": "edges",
+     "id": "A-C"
+    },
+    {
+     "op": "delete_row",
+     "entity": "edges",
+     "id": "B-D"
+    },
+    {
+     "op": "delete_row",
+     "entity": "edges",
+     "id": "A-A"
+    },
+    {
+     "op": "delete_row",
+     "entity": "edges",
+     "id": "B-B"
+    },
+    {
+     "op": "delete_row",
+     "entity": "edges",
+     "id": "C-C"
+    },
+    {
+     "op": "delete_row",
+     "entity": "edges",
+     "id": "D-D"
+    },
+    {
+     "op": "update_row",
+     "entity": "points",
+     "id": "A",
+     "set": {
+      "group": "noise"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "points",
+     "id": "B",
+     "set": {
+      "group": "noise"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "points",
+     "id": "C",
+     "set": {
+      "group": "noise"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "points",
+     "id": "D",
+     "set": {
+      "group": "noise"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "clusters",
+     "id": "C1",
+     "set": {
+      "status": "gone"
+     }
+    }
+   ],
+   "annotations": [
+    {
+     "type": "note",
+     "target": "row:g:A",
+     "text": "Every point is noise. With k = 3 there is no split at all.",
+     "style": "change",
+     "title": "Cluster gone"
+    }
+   ],
+   "narration": "At level one, the last edges go, and every point is noise. So with k equal to three, these seven points give one cluster that only shrinks and then vanishes. It never splits. Next, the same points with k equal to two.",
+   "panels": [
+    "g",
+    "e",
+    "c"
+   ]
+  },
+  {
+   "id": "5e-k2core",
+   "step": "5.4",
+   "title": "Worked example 2: the same points with k = 2",
+   "caption": "With k = 2 the core distance of A to F is 1.000; only G still needs 3.606.",
+   "status": {
+    "level": "available",
+    "detail": "Computed by check script, equals the summary (core distances for k = 2)"
+   },
+   "sources": [
+    "S5",
+    "CHK"
+   ],
+   "transitions": [
+    {
+     "op": "update_row",
+     "entity": "points",
+     "id": "A",
+     "set": {
+      "r": 1.0,
+      "group": "base"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "points",
+     "id": "B",
+     "set": {
+      "r": 1.0,
+      "group": "base"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "points",
+     "id": "C",
+     "set": {
+      "r": 1.0,
+      "group": "base"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "points",
+     "id": "D",
+     "set": {
+      "r": 1.0,
+      "group": "base"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "points",
+     "id": "E",
+     "set": {
+      "r": 1.0,
+      "group": "base"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "points",
+     "id": "F",
+     "set": {
+      "r": 1.0,
+      "group": "base"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "points",
+     "id": "G",
+     "set": {
+      "r": 3.606,
+      "group": "base"
+     }
+    }
+   ],
+   "annotations": [
+    {
+     "type": "note",
+     "target": "circle:g:E",
+     "text": "E and F now need radius 1.000: their circles shrink.",
+     "style": "info",
+     "title": "Smaller circles"
+    },
+    {
+     "type": "note",
+     "target": "circle:g:G",
+     "text": "G still needs 3.606, so G stays sparse.",
+     "style": "change",
+     "title": "G is unchanged"
+    }
+   ],
+   "narration": "Now the same seven points with k equal to two. A point only has to reach its nearest neighbour. The circles of E and F shrink to radius one. G is still alone: it needs three point six oh six.",
+   "panels": [
+    "g"
+   ]
+  },
+  {
+   "id": "5f-k2mst",
+   "step": "5.5",
+   "title": "The tree for k = 2 and its self-edges",
+   "caption": "The six tree edges, now with E-F at 1.000, plus seven self-edges.",
+   "status": {
+    "level": "available",
+    "detail": "Computed; for k = 2 mutual reachability equals d"
+   },
+   "sources": [
+    "S5",
+    "CHK"
+   ],
+   "transitions": [
+    {
+     "op": "update_row",
+     "entity": "points",
+     "id": "A",
+     "set": {
+      "r": null
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "points",
+     "id": "B",
+     "set": {
+      "r": null
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "points",
+     "id": "C",
+     "set": {
+      "r": null
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "points",
+     "id": "D",
+     "set": {
+      "r": null
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "points",
+     "id": "E",
+     "set": {
+      "r": null
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "points",
+     "id": "F",
+     "set": {
+      "r": null
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "points",
+     "id": "G",
+     "set": {
+      "r": null
+     }
+    },
+    {
+     "op": "add_row",
+     "entity": "edges",
+     "row": {
+      "id": "A-B",
+      "a": "A",
+      "b": "B",
+      "d": 1.0,
+      "weight": 1.0,
+      "state": "mst"
+     }
+    },
+    {
+     "op": "add_row",
+     "entity": "edges",
+     "row": {
+      "id": "A-C",
+      "a": "A",
+      "b": "C",
+      "d": 1.0,
+      "weight": 1.0,
+      "state": "mst"
+     }
+    },
+    {
+     "op": "add_row",
+     "entity": "edges",
+     "row": {
+      "id": "B-D",
+      "a": "B",
+      "b": "D",
+      "d": 1.0,
+      "weight": 1.0,
+      "state": "mst"
+     }
+    },
+    {
+     "op": "add_row",
+     "entity": "edges",
+     "row": {
+      "id": "E-F",
+      "a": "E",
+      "b": "F",
+      "d": 1.0,
+      "weight": 1.0,
+      "state": "mst"
+     }
+    },
+    {
+     "op": "add_row",
+     "entity": "edges",
+     "row": {
+      "id": "D-G",
+      "a": "D",
+      "b": "G",
+      "d": 3.606,
+      "weight": 3.606,
+      "state": "mst"
+     }
+    },
+    {
+     "op": "add_row",
+     "entity": "edges",
+     "row": {
+      "id": "E-G",
+      "a": "E",
+      "b": "G",
+      "d": 3.606,
+      "weight": 3.606,
+      "state": "mst"
+     }
+    },
+    {
+     "op": "add_row",
+     "entity": "edges",
+     "row": {
+      "id": "A-A",
+      "a": "A",
+      "b": "A",
+      "d": null,
+      "weight": 1.0,
+      "state": "self"
+     }
+    },
+    {
+     "op": "add_row",
+     "entity": "edges",
+     "row": {
+      "id": "B-B",
+      "a": "B",
+      "b": "B",
+      "d": null,
+      "weight": 1.0,
+      "state": "self"
+     }
+    },
+    {
+     "op": "add_row",
+     "entity": "edges",
+     "row": {
+      "id": "C-C",
+      "a": "C",
+      "b": "C",
+      "d": null,
+      "weight": 1.0,
+      "state": "self"
+     }
+    },
+    {
+     "op": "add_row",
+     "entity": "edges",
+     "row": {
+      "id": "D-D",
+      "a": "D",
+      "b": "D",
+      "d": null,
+      "weight": 1.0,
+      "state": "self"
+     }
+    },
+    {
+     "op": "add_row",
+     "entity": "edges",
+     "row": {
+      "id": "E-E",
+      "a": "E",
+      "b": "E",
+      "d": null,
+      "weight": 1.0,
+      "state": "self"
+     }
+    },
+    {
+     "op": "add_row",
+     "entity": "edges",
+     "row": {
+      "id": "F-F",
+      "a": "F",
+      "b": "F",
+      "d": null,
+      "weight": 1.0,
+      "state": "self"
+     }
+    },
+    {
+     "op": "add_row",
+     "entity": "edges",
+     "row": {
+      "id": "G-G",
+      "a": "G",
+      "b": "G",
+      "d": null,
+      "weight": 3.606,
+      "state": "self"
+     }
+    },
+    {
+     "op": "delete_row",
+     "entity": "clusters",
+     "id": "C1"
+    },
+    {
+     "op": "add_row",
+     "entity": "clusters",
+     "row": {
+      "id": "C1",
+      "members": "A B C D E F G",
+      "size": 7,
+      "status": "active"
+     }
+    }
+   ],
+   "annotations": [
+    {
+     "type": "note",
+     "target": "edge:g:E-F",
+     "text": "E-F is back at 1.000: for k = 2 the new distance equals the plain distance.",
+     "style": "info",
+     "title": "Single linkage"
+    }
+   ],
+   "narration": "The tree for k equal to two has the same shape, but E to F is back at one. For k equal to two, the mutual reachability distance is just the ordinary distance, so this is plain single linkage. The self edges are one for A to F, and three point six oh six for G.",
+   "panels": [
+    "g",
+    "e",
+    "c"
+   ]
+  },
+  {
+   "id": "5g-k2cut",
+   "step": "5.6",
+   "title": "Level 3.606: remove D-G, E-G and G's self-edge",
+   "caption": "G becomes noise; the square and the pair E-F are two separate pieces.",
+   "status": {
+    "level": "available",
+    "detail": "Computed; pieces ABCD and EF, G is noise"
+   },
+   "sources": [
+    "S5",
+    "CHK"
+   ],
+   "transitions": [
+    {
+     "op": "delete_row",
+     "entity": "edges",
+     "id": "D-G"
+    },
+    {
+     "op": "delete_row",
+     "entity": "edges",
+     "id": "E-G"
+    },
+    {
+     "op": "delete_row",
+     "entity": "edges",
+     "id": "G-G"
+    },
+    {
+     "op": "update_row",
+     "entity": "points",
+     "id": "G",
+     "set": {
+      "group": "noise"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "points",
+     "id": "A",
+     "set": {
+      "group": "cl_a"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "points",
+     "id": "B",
+     "set": {
+      "group": "cl_a"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "points",
+     "id": "C",
+     "set": {
+      "group": "cl_a"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "points",
+     "id": "D",
+     "set": {
+      "group": "cl_a"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "points",
+     "id": "E",
+     "set": {
+      "group": "cl_b"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "points",
+     "id": "F",
+     "set": {
+      "group": "cl_b"
+     }
+    }
+   ],
+   "annotations": [
+    {
+     "type": "note",
+     "target": "row:g:G",
+     "text": "G has no edge left: noise. The square (4 points) and the pair (2 points) fall apart.",
+     "style": "change",
+     "title": "Two pieces"
+    }
+   ],
+   "narration": "At level three point six oh six, the two edges that tie G to the rest, and G's own self-edge, are removed. G is now noise, and the square and the pair E and F fall apart into two pieces. But is that a true split? That depends on the minimum cluster size.",
+   "panels": [
+    "g",
+    "e",
+    "c"
+   ]
+  },
+  {
+   "id": "6a-m2",
+   "step": "6.1",
+   "title": "Minimum cluster size m = 2: a true split",
+   "caption": "Both pieces have at least two points, so the cluster splits in two.",
+   "status": {
+    "level": "available",
+    "detail": "Computed; two clusters, as Worked example 2"
+   },
+   "sources": [
+    "S5",
+    "S6",
+    "CHK"
+   ],
+   "transitions": [
+    {
+     "op": "update_row",
+     "entity": "clusters",
+     "id": "C1",
+     "set": {
+      "status": "split"
+     }
+    },
+    {
+     "op": "add_row",
+     "entity": "clusters",
+     "row": {
+      "id": "C2",
+      "members": "A B C D",
+      "size": 4,
+      "status": "active"
+     }
+    },
+    {
+     "op": "add_row",
+     "entity": "clusters",
+     "row": {
+      "id": "C3",
+      "members": "E F",
+      "size": 2,
+      "status": "active"
+     }
+    }
+   ],
+   "annotations": [
+    {
+     "type": "note",
+     "target": "row:c:C3",
+     "text": "Square: 4 points, pair: 2 points, both at least m = 2. Two new labels.",
+     "style": "info",
+     "title": "True split"
+    }
+   ],
+   "narration": "Step six: the minimum cluster size m. A piece with fewer than m points is spurious, and is called noise. With m equal to two, the square has four points and the pair has two. Both are large enough, so this is a true split: two new clusters.",
+   "panels": [
+    "g",
+    "e",
+    "c"
+   ]
+  },
+  {
+   "id": "6b-m3",
+   "step": "6.2",
+   "title": "m = 3: the pair is spurious, so the cluster only shrinks",
+   "caption": "Algorithm 2: exactly one piece is large enough, so it keeps the cluster's label.",
+   "status": {
+    "level": "available",
+    "detail": "Computed; m = 3 is an extra case, not in the summary"
+   },
+   "sources": [
+    "S6",
+    "CHK"
+   ],
+   "transitions": [
+    {
+     "op": "delete_row",
+     "entity": "clusters",
+     "id": "C2"
+    },
+    {
+     "op": "delete_row",
+     "entity": "clusters",
+     "id": "C3"
+    },
+    {
+     "op": "update_row",
+     "entity": "clusters",
+     "id": "C1",
+     "set": {
+      "members": "A B C D",
+      "size": 4,
+      "status": "shrunk"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "points",
+     "id": "E",
+     "set": {
+      "group": "noise"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "points",
+     "id": "F",
+     "set": {
+      "group": "noise"
+     }
+    }
+   ],
+   "annotations": [
+    {
+     "type": "note",
+     "target": "row:c:C1",
+     "text": "The pair has 2 points, fewer than m = 3: noise. The square keeps the label C1.",
+     "style": "change",
+     "title": "Shrink, not split"
+    }
+   ],
+   "narration": "Now try m equal to three. The pair has only two points, which is fewer than three, so it is spurious and becomes noise. Exactly one piece is large enough, so it keeps the cluster's label. The cluster has just shrunk. It is not a split.",
+   "panels": [
+    "g",
+    "e",
+    "c"
+   ]
+  },
+  {
+   "id": "6c-m5",
+   "step": "6.3",
+   "title": "m = 5: both pieces are spurious, the cluster disappears",
+   "caption": "No piece reaches five points, so the cluster has disappeared.",
+   "status": {
+    "level": "available",
+    "detail": "Computed; m = 5 is an extra case, not in the summary"
+   },
+   "sources": [
+    "S6",
+    "CHK"
+   ],
+   "transitions": [
+    {
+     "op": "update_row",
+     "entity": "clusters",
+     "id": "C1",
+     "set": {
+      "members": "none",
+      "size": 0,
+      "status": "gone"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "points",
+     "id": "A",
+     "set": {
+      "group": "noise"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "points",
+     "id": "B",
+     "set": {
+      "group": "noise"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "points",
+     "id": "C",
+     "set": {
+      "group": "noise"
+     }
+    },
+    {
+     "op": "update_row",
+     "entity": "points",
+     "id": "D",
+     "set": {
+      "group": "noise"
+     }
+    }
+   ],
+   "annotations": [
+    {
+     "type": "note",
+     "target": "row:c:C1",
+     "text": "Square: 4 points and pair: 2 points are both below m = 5: everything is noise.",
+     "style": "change",
+     "title": "Disappeared"
+    }
+   ],
+   "narration": "With m equal to five, even the square is too small. Every piece is spurious, so the cluster has disappeared. So the minimum cluster size decides which splits are real: two or more large pieces split, one large piece shrinks, and none means the cluster is gone.",
+   "panels": [
+    "g",
+    "e",
+    "c"
+   ]
+  },
+  {
+   "id": "summary",
+   "step": "S",
+   "title": "Steps 2 to 6 on the seven points",
+   "caption": "Every number was recomputed and matches the summary.",
+   "status": {
+    "level": "info",
+    "detail": "Summary"
+   },
+   "sources": [
+    "S2",
+    "S3",
+    "S4",
+    "S5",
+    "S6",
+    "CHK"
+   ],
+   "narration": "To sum up. Mutual reachability pushes sparse points apart. The graph of these distances reduces to a minimum spanning tree with a self-edge per point. Removing edges from the heaviest builds the hierarchy, and the minimum cluster size m decides which splits are real. Cluster stability and the final selection are the next steps.",
+   "summary": {
+    "columns": [
+     "Step",
+     "What the points showed",
+     "Result"
+    ],
+    "widths": [
+     520,
+     940,
+     320
+    ],
+    "status_column": 2,
+    "rows": [
+     [
+      "2. Mutual reachability",
+      "E-F pushed from 1.000 to 4.472; dense pairs unchanged",
+      "available"
+     ],
+     [
+      "3. Graph, Proposition 1",
+      "cuts at 3.0, 3.606, 4.5 give the DBSCAN* clusters",
+      "available"
+     ],
+     [
+      "4. MST with self-edges",
+      "6 tree edges plus 7 self-edges, 13 = 2n - 1",
+      "available"
+     ],
+     [
+      "5. Hierarchy",
+      "k = 3 only shrinks; k = 2 splits into the square and the pair",
+      "available"
+     ],
+     [
+      "6. Minimum cluster size m",
+      "m = 2 split, m = 3 shrink, m = 5 gone",
+      "available"
+     ]
+    ]
+   }
+  }
+ ]
+}

@@ -1,0 +1,190 @@
+{
+ "schema_version": "1.1",
+ "meta": {
+  "title": "Minimal: a task is added and finished",
+  "width": 1920,
+  "height": 1080,
+  "fps": 30,
+  "default_seconds": 4,
+  "crossfade_seconds": 0.5,
+  "output_name": "minimal"
+ },
+ "style": {
+  "colors": {
+   "background": "#F4F6FA"
+  },
+  "badges": {
+   "info": {
+    "fill": "#E3E8F0",
+    "text": "#1F2A3D",
+    "label": "OVERVIEW",
+    "sources_optional": true
+   },
+   "available": {
+    "fill": "#1F8A4C",
+    "text": "#FFFFFF",
+    "label": "AVAILABLE"
+   },
+   "designed": {
+    "fill": "#C77700",
+    "text": "#FFFFFF",
+    "label": "DESIGNED, NOT BUILT",
+    "unbuilt": true
+   },
+   "planned": {
+    "fill": "#B42318",
+    "text": "#FFFFFF",
+    "label": "PLANNED",
+    "unbuilt": true
+   },
+   "inferred": {
+    "fill": "#6941C6",
+    "text": "#FFFFFF",
+    "label": "INFERRED, NOT RUN",
+    "unbuilt": true
+   }
+  },
+  "arrows": {
+   "flow": {
+    "color": "#1F6FB2",
+    "width": 4
+   }
+  },
+  "highlights": {
+   "focus": {
+    "color": "#1F6FB2",
+    "width": 4
+   }
+  },
+  "callouts": {
+   "info": {
+    "fill": "#EEF4FF",
+    "border": "#1F6FB2",
+    "text": "#1F2A3D"
+   }
+  }
+ },
+ "sources": [
+  {
+   "id": "DOC",
+   "title": "Invented example",
+   "kind": "example",
+   "locator": "examples/minimal"
+  }
+ ],
+ "entities": {
+  "tasks": {
+   "title": "Tasks",
+   "key": "id",
+   "sources": [
+    "DOC"
+   ],
+   "fields": {
+    "id": {
+     "nullable": false
+    },
+    "state": {
+     "enum": [
+      "todo",
+      "done"
+     ],
+     "nullable": false
+    }
+   }
+  }
+ },
+ "initial_state": {},
+ "layout": {
+  "panels": [
+   {
+    "id": "tasks",
+    "kind": "table",
+    "entity": "tasks",
+    "region": [
+     24,
+     96,
+     860,
+     400
+    ],
+    "title": "Tasks",
+    "columns": [
+     {
+      "field": "id",
+      "width": 100,
+      "font": "mono"
+     },
+     {
+      "field": "state",
+      "width": 200
+     }
+    ]
+   }
+  ]
+ },
+ "frames": [
+  {
+   "id": "add",
+   "step": "1",
+   "title": "A task is added",
+   "caption": "Task T1 starts as todo.",
+   "status": {
+    "level": "available",
+    "detail": ""
+   },
+   "sources": [
+    "DOC"
+   ],
+   "annotations": [
+    {
+     "type": "note",
+     "target": "row:tasks:T1",
+     "text": "The new row starts in the todo state.",
+     "style": "info"
+    }
+   ],
+   "transitions": [
+    {
+     "op": "add_row",
+     "entity": "tasks",
+     "row": {
+      "id": "T1",
+      "state": "todo"
+     }
+    }
+   ],
+   "narration": "A task is added. Like every new task, it starts in the to do state."
+  },
+  {
+   "id": "finish",
+   "step": "2",
+   "title": "The task is finished",
+   "caption": "Task T1 becomes done.",
+   "status": {
+    "level": "available",
+    "detail": ""
+   },
+   "sources": [
+    "DOC"
+   ],
+   "annotations": [
+    {
+     "type": "note",
+     "target": "cell:tasks:T1:state",
+     "text": "Only the state changed.",
+     "style": "info"
+    }
+   ],
+   "transitions": [
+    {
+     "op": "update_row",
+     "entity": "tasks",
+     "id": "T1",
+     "set": {
+      "state": "done"
+     }
+    }
+   ],
+   "narration": "Later the task is finished. Only its state changes, and the identifier stays the same."
+  }
+ ]
+}

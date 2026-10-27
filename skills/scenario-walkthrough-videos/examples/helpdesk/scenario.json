@@ -1,0 +1,366 @@
+{
+  "schema_version": "1.1",
+  "meta": {
+    "title": "A small help desk: the life of a request",
+    "version": "1.0.0",
+    "date": "2026-10-23",
+    "width": 1920,
+    "height": 1080,
+    "fps": 30,
+    "default_seconds": 6,
+    "crossfade_seconds": 0.5,
+    "output_name": "helpdesk-walkthrough",
+    "notes": "An invented example. The help desk, its people, its requests and its sources are made up to show the format."
+  },
+  "style": {
+    "colors": {
+      "background": "#F4F6FA"
+    },
+    "entity_colors": {
+      "requests": "#3B5B92",
+      "history": "#5B6678",
+      "categories": "#7A4FB5",
+      "agents": "#0E7C66"
+    },
+    "color_maps": {
+      "category": {
+        "C1": "#2563EB",
+        "C2": "#D97706",
+        "C3": "#0891B2",
+        "C4": "#059669"
+      }
+    },
+    "badges": {
+      "info": {"fill": "#E3E8F0", "text": "#1F2A3D", "label": "OVERVIEW", "sources_optional": true},
+      "available": {"fill": "#1F8A4C", "text": "#FFFFFF", "label": "AVAILABLE"},
+      "designed": {"fill": "#C77700", "text": "#FFFFFF", "label": "DESIGNED, NOT BUILT", "unbuilt": true},
+      "planned": {"fill": "#B42318", "text": "#FFFFFF", "label": "PLANNED", "unbuilt": true},
+      "inferred": {"fill": "#6941C6", "text": "#FFFFFF", "label": "INFERRED, NOT RUN", "unbuilt": true}
+    },
+    "arrows": {
+      "flow": {"color": "#1F6FB2", "width": 4},
+      "move": {"color": "#C2410C", "width": 4},
+      "warn": {"color": "#B42318", "width": 4, "dash": "8 6"}
+    },
+    "highlights": {
+      "focus": {"color": "#1F6FB2", "width": 4},
+      "change": {"color": "#C2410C", "width": 4},
+      "warn": {"color": "#B42318", "width": 4, "dash": "10 6"},
+      "planned": {"color": "#B42318", "width": 3, "dash": "8 6"}
+    },
+    "callouts": {
+      "info": {"fill": "#EEF4FF", "border": "#1F6FB2", "text": "#1F2A3D"},
+      "rule": {"fill": "#FFFBEB", "border": "#C77700", "text": "#1F2A3D"},
+      "warn": {"fill": "#FEF3F2", "border": "#B42318", "text": "#1F2A3D"},
+      "change": {"fill": "#FFF7ED", "border": "#C2410C", "text": "#1F2A3D"}
+    }
+  },
+  "sources": [
+    {"id": "GUIDE-2", "title": "Help-desk process guide (invented), section 2: intake and triage", "kind": "example"},
+    {"id": "GUIDE-3", "title": "Help-desk process guide (invented), section 3: assignment and escalation", "kind": "example"},
+    {"id": "GUIDE-4", "title": "Help-desk process guide (invented), section 4: category upkeep", "kind": "example"},
+    {"id": "MODEL", "title": "Help-desk data model (invented): requests, categories, agents, history", "kind": "example"},
+    {"id": "ROADMAP-3", "title": "Help-desk roadmap (invented), item 3: auto-close", "kind": "example"}
+  ],
+  "entities": {
+    "requests": {
+      "title": "Requests",
+      "sources": ["MODEL"],
+      "fields": {
+        "id": {"nullable": false},
+        "summary": {},
+        "category_id": {"ref": "categories"},
+        "agent_id": {"ref": "agents"},
+        "status": {"enum": ["new", "triaged", "assigned", "escalated", "closed"], "nullable": false}
+      }
+    },
+    "categories": {
+      "title": "Categories",
+      "sources": ["MODEL", "GUIDE-4"],
+      "fields": {"id": {"nullable": false}, "name": {"nullable": false}}
+    },
+    "agents": {
+      "title": "Agents",
+      "sources": ["MODEL", "GUIDE-3"],
+      "fields": {
+        "id": {"nullable": false},
+        "name": {},
+        "team": {"enum": ["Tier 1", "Tier 2"]}
+      }
+    },
+    "history": {
+      "title": "History",
+      "sources": ["MODEL"],
+      "fields": {
+        "id": {"nullable": false},
+        "request_id": {"ref": "requests"},
+        "event": {},
+        "detail": {}
+      }
+    }
+  },
+  "rules": [
+    {
+      "id": "assign-needs-category",
+      "op": "move_row",
+      "entity": "requests",
+      "field": "agent_id",
+      "when": {"all": [{"field": "new.agent_id", "is_null": false}, {"field": "row.category_id", "is_null": true}]},
+      "message": "a request with no category cannot get an agent",
+      "sources": ["GUIDE-3"]
+    },
+    {
+      "id": "escalate-needs-tier-2",
+      "op": ["update_row", "move_row"],
+      "entity": "requests",
+      "field": "status",
+      "when": {"all": [
+        {"field": "new.status", "eq": "escalated"},
+        {"count": {"entity": "agents", "where": {"id": "$new.agent_id", "team": "Tier 2"}}, "eq": 0}
+      ]},
+      "message": "an escalated request needs a Tier 2 agent",
+      "sources": ["GUIDE-3"]
+    }
+  ],
+  "initial_state": {
+    "categories": [
+      {"id": "C1", "name": "Network"},
+      {"id": "C2", "name": "Email"},
+      {"id": "C3", "name": "Wi-Fi"},
+      {"id": "C4", "name": "Hardware"}
+    ],
+    "agents": [
+      {"id": "A1", "name": "Ana", "team": "Tier 1"},
+      {"id": "A2", "name": "Ben", "team": "Tier 1"},
+      {"id": "A3", "name": "Chen", "team": "Tier 2"}
+    ]
+  },
+  "layout": {
+    "panels": [
+      {
+        "id": "requests", "kind": "table", "entity": "requests", "region": [24, 96, 860, 430],
+        "title": "Requests", "subtitle": "requests", "row_height": 32,
+        "columns": [
+          {"field": "id", "width": 70, "font": "mono"},
+          {"field": "summary", "width": 330},
+          {"field": "category_id", "header": "category", "width": 150, "font": "mono", "color_map": "category"},
+          {"field": "agent_id", "header": "agent", "width": 100, "font": "mono"},
+          {"field": "status", "width": 150}
+        ]
+      },
+      {
+        "id": "history", "kind": "table", "entity": "history", "region": [24, 536, 860, 424],
+        "title": "History", "subtitle": "history", "order": "newest_first", "window": 8, "font_size": 14,
+        "columns": [
+          {"field": "request_id", "header": "request", "width": 100, "font": "mono"},
+          {"field": "event", "width": 150, "font": "mono"},
+          {"field": "detail", "width": 560}
+        ]
+      },
+      {
+        "id": "categories", "kind": "table", "entity": "categories", "region": [904, 96, 390, 250],
+        "title": "Categories", "subtitle": "categories",
+        "columns": [
+          {"field": "id", "width": 80, "font": "mono", "color_map": "category"},
+          {"field": "name", "width": 280}
+        ]
+      },
+      {
+        "id": "agents", "kind": "table", "entity": "agents", "region": [904, 356, 390, 200],
+        "title": "Agents", "subtitle": "agents",
+        "columns": [
+          {"field": "id", "width": 70, "font": "mono"},
+          {"field": "name", "width": 160},
+          {"field": "team", "width": 130}
+        ]
+      },
+      {
+        "id": "status", "kind": "board", "entity": "requests", "region": [1314, 96, 582, 460],
+        "title": "Status board", "lane_field": "status",
+        "lanes": ["new", "triaged", "assigned", "escalated", "closed"],
+        "chip_color_field": "category_id", "color_map": "category"
+      },
+      {
+        "id": "by_category", "kind": "board", "entity": "requests", "region": [904, 566, 992, 394],
+        "title": "Requests by category", "lane_field": "category_id",
+        "lanes_from": {"entity": "categories", "label": "name"}, "null_lane": "no category",
+        "lane_color_map": "category", "chip_color_field": "category_id", "color_map": "category"
+      }
+    ]
+  },
+  "frames": [
+    {
+      "id": "start",
+      "step": "0",
+      "title": "The help desk before the first request",
+      "caption": "Four categories and three agents exist; no request has arrived yet.",
+      "status": {"level": "info", "detail": "Starting state"},
+      "sources": ["MODEL"],
+      "annotations": [
+        {"type": "note", "target": "panel:requests", "text": "Green row: added in this step. Yellow cell: changed in this step. Dashed row: not built yet. The badge at the top right says whether the step is available.", "style": "info", "title": "How to read a frame", "w": 460}
+      ]
+    },
+    {
+      "id": "arrive",
+      "step": "1",
+      "title": "Five requests arrive",
+      "caption": "Five requests arrive: status new, no category, one created row each in the history.",
+      "status": {"level": "available", "detail": "Intake"},
+      "sources": ["GUIDE-2", "MODEL"],
+      "transitions": [
+        {"op": "add_row", "entity": "requests", "row": {"id": "R1", "summary": "VPN drops every hour", "status": "new"}},
+        {"op": "add_row", "entity": "requests", "row": {"id": "R2", "summary": "Shared mailbox is full", "status": "new"}},
+        {"op": "add_row", "entity": "requests", "row": {"id": "R3", "summary": "Cannot reach the file server", "status": "new"}},
+        {"op": "add_row", "entity": "requests", "row": {"id": "R4", "summary": "Guest Wi-Fi asks twice for a code", "status": "new"}},
+        {"op": "add_row", "entity": "requests", "row": {"id": "R5", "summary": "Something is slow", "status": "new"}},
+        {"op": "add_row", "entity": "history", "row": {"id": "H1", "request_id": "R1", "event": "created", "detail": "by email"}},
+        {"op": "add_row", "entity": "history", "row": {"id": "H2", "request_id": "R2", "event": "created", "detail": "by portal"}},
+        {"op": "add_row", "entity": "history", "row": {"id": "H3", "request_id": "R3", "event": "created", "detail": "by phone"}},
+        {"op": "add_row", "entity": "history", "row": {"id": "H4", "request_id": "R4", "event": "created", "detail": "by portal"}},
+        {"op": "add_row", "entity": "history", "row": {"id": "H5", "request_id": "R5", "event": "created", "detail": "by email"}}
+      ],
+      "annotations": [
+        {"type": "arrow", "from": "panel:requests", "to": "lane:status:new", "style": "flow", "label": "status new"},
+        {"type": "note", "target": "lane:status:new", "text": "Each request starts with status new and no category. The history keeps one created row for each request.", "style": "info"}
+      ]
+    },
+    {
+      "id": "triage",
+      "step": "2",
+      "title": "Triage gives four requests a category",
+      "caption": "Triage gives four requests a category; the vague R5 stays in the no category lane.",
+      "status": {"level": "available", "detail": "Triage"},
+      "sources": ["GUIDE-2"],
+      "transitions": [
+        {"op": "move_row", "entity": "requests", "ids": ["R1", "R3"], "field": "category_id", "to": "C1", "set": {"status": "triaged"}},
+        {"op": "move_row", "entity": "requests", "id": "R2", "field": "category_id", "to": "C2", "set": {"status": "triaged"}},
+        {"op": "move_row", "entity": "requests", "id": "R4", "field": "category_id", "to": "C3", "set": {"status": "triaged"}},
+        {"op": "add_row", "entity": "history", "row": {"id": "H6", "request_id": null, "event": "triage", "detail": "R1 and R3 to Network, R2 to Email, R4 to Wi-Fi"}}
+      ],
+      "annotations": [
+        {"type": "highlight", "target": "lane:by_category:NULL", "style": "warn", "label": "R5 waits"},
+        {"type": "note", "target": "lane:by_category:NULL", "text": "R5 is too vague, so it stays in the no category lane until the caller answers.", "style": "warn"}
+      ]
+    },
+    {
+      "id": "assign",
+      "step": "3",
+      "title": "An agent takes each categorised request",
+      "caption": "Assignment sets the agent and the status: Ana takes R1, R3, R4; Ben takes R2.",
+      "status": {"level": "available", "detail": "Assignment"},
+      "sources": ["GUIDE-3"],
+      "transitions": [
+        {"op": "move_row", "entity": "requests", "ids": ["R1", "R3", "R4"], "field": "agent_id", "to": "A1", "set": {"status": "assigned"}},
+        {"op": "move_row", "entity": "requests", "id": "R2", "field": "agent_id", "to": "A2", "set": {"status": "assigned"}},
+        {"op": "add_row", "entity": "history", "row": {"id": "H7", "request_id": null, "event": "assign", "detail": "R1, R3, R4 to Ana; R2 to Ben"}}
+      ],
+      "annotations": [
+        {"type": "arrow", "from": "row:agents:A1", "to": "row:requests:R1", "style": "flow", "label": "agent A1"},
+        {"type": "note", "target": "row:requests:R1", "text": "Assignment sets the agent and the status. Ana takes R1, R3 and R4; Ben takes R2.", "style": "info"}
+      ]
+    },
+    {
+      "id": "refuse",
+      "step": "4",
+      "title": "A request with no category cannot get an agent",
+      "caption": "Ben tries to take R5: the rule refuses the change and nothing moves.",
+      "status": {"level": "available", "detail": "Rule: assign-needs-category"},
+      "sources": ["GUIDE-3"],
+      "transitions": [
+        {"op": "move_row", "entity": "requests", "id": "R5", "field": "agent_id", "to": "A2", "expect_refused": "assign-needs-category"}
+      ],
+      "annotations": [
+        {"type": "note", "target": "row:requests:R5", "text": "The rule assign-needs-category refuses the move: R5 has no category, so it cannot get an agent. The state does not change.", "style": "rule", "title": "Refused by a rule, as data", "w": 460}
+      ]
+    },
+    {
+      "id": "rename",
+      "step": "5",
+      "title": "The Email category gets a wider name: Messaging",
+      "caption": "Email is renamed Messaging: the name changes, the ID C2 and R2 stay.",
+      "status": {"level": "available", "detail": "Category upkeep"},
+      "sources": ["GUIDE-4"],
+      "transitions": [
+        {"op": "update_row", "entity": "categories", "id": "C2", "set": {"name": "Messaging"}}
+      ],
+      "annotations": [
+        {"type": "before_after", "target": "cell:categories:C2:name", "x": 60, "y": 360, "w": 600, "style": "change",
+         "title": "Rename", "arrow_style": "move"}
+      ]
+    },
+    {
+      "id": "merge",
+      "step": "6",
+      "title": "Wi-Fi merges into Network",
+      "caption": "Wi-Fi merges into Network: its requests move, then the empty category is deleted.",
+      "status": {"level": "available", "detail": "Category upkeep: merge"},
+      "sources": ["GUIDE-4"],
+      "transitions": [
+        {"op": "move_row", "entity": "requests", "where": {"category_id": "C3"}, "field": "category_id", "to": "C1"},
+        {"op": "delete_row", "entity": "categories", "id": "C3"},
+        {"op": "add_row", "entity": "history", "row": {"id": "H8", "request_id": "R4", "event": "merge", "detail": "Wi-Fi into Network"}}
+      ],
+      "annotations": [
+        {"type": "arrow", "from": "lane:by_category:C3", "to": "lane:by_category:C1", "style": "move", "label": "merge"},
+        {"type": "highlight", "target": "row:categories:C3", "style": "change", "label": "deleted"},
+        {"type": "note", "target": "lane:by_category:C1", "text": "The merge moves every Wi-Fi request to Network, then deletes the empty category. A delete is refused while a request points at it.", "style": "change", "w": 440}
+      ]
+    },
+    {
+      "id": "escalate",
+      "step": "7",
+      "title": "R2 escalates to a Tier 2 agent",
+      "caption": "R2 moves from Ben to Chen (Tier 2) and its status becomes escalated.",
+      "status": {"level": "available", "detail": "Escalation"},
+      "sources": ["GUIDE-3"],
+      "transitions": [
+        {"op": "move_row", "entity": "requests", "id": "R2", "field": "agent_id", "to": "A3", "set": {"status": "escalated"}},
+        {"op": "add_row", "entity": "history", "row": {"id": "H9", "request_id": "R2", "event": "escalate", "detail": "Ben to Chen (Tier 2)"}}
+      ],
+      "annotations": [
+        {"type": "before_after", "target": "cell:requests:R2:agent_id", "x": 60, "y": 360, "w": 520, "style": "change",
+         "title": "Agent of R2", "arrow_style": "move"},
+        {"type": "badge", "target": "row:agents:A3", "text": "Tier 2", "style": "available"}
+      ]
+    },
+    {
+      "id": "auto-close",
+      "step": "8",
+      "title": "Planned: close a request after seven quiet days",
+      "caption": "Planned, not built: close a request after seven quiet days.",
+      "status": {"level": "planned", "detail": "Roadmap item 3, not built"},
+      "sources": ["ROADMAP-3"],
+      "transitions": [
+        {"op": "set_field", "entity": "requests", "id": "R1", "field": "status", "value": "closed"},
+        {"op": "add_row", "entity": "history", "row": {"id": "H10", "request_id": "R1", "event": "auto-close", "detail": "7 days with no reply (planned)"}}
+      ],
+      "annotations": [
+        {"type": "highlight", "target": "lane:status:closed", "style": "planned", "label": "planned"},
+        {"type": "note", "target": "lane:status:closed", "text": "This step is on the roadmap only. The dashed row is a change that no code makes today.", "style": "warn"}
+      ]
+    },
+    {
+      "id": "summary",
+      "step": "9",
+      "title": "What each step shows, and whether it exists",
+      "caption": "Seven steps are available today; auto-close is planned.",
+      "status": {"level": "info", "detail": "Summary"},
+      "sources": ["GUIDE-2", "GUIDE-3", "GUIDE-4", "ROADMAP-3"],
+      "summary": {
+        "columns": ["Step", "What happens", "Status"],
+        "widths": [420, 1060, 300],
+        "status_column": 2,
+        "rows": [
+          ["1. Intake", "Requests arrive with status new and no category.", "available"],
+          ["2. Triage", "Each clear request gets a category; a vague one waits.", "available"],
+          ["3. Assignment", "An agent takes each request that has a category.", "available"],
+          ["4. Rule", "A request with no category cannot get an agent.", "available"],
+          ["5. Rename", "A category changes its name; its ID and its requests stay.", "available"],
+          ["6. Merge", "Requests move to the kept category; the empty one is deleted.", "available"],
+          ["7. Escalation", "A request moves to a Tier 2 agent.", "available"],
+          ["8. Auto-close", "Close a request after seven quiet days.", "planned"]
+        ]
+      }
+    }
+  ]
+}
